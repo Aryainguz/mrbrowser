@@ -1,0 +1,26 @@
+name: example-login
+description: "A simple login flow demonstrating intent-based interaction"
+
+steps:
+  - open:
+      url: https://example.com/login
+
+  - type:
+      target: "Email address"
+      value: "user@example.com"
+
+  - type:
+      target: "Password"
+      value: "supersecret"
+
+  - click:
+      target: "Sign In"
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      text_visible: "Welcome back"
+
+  - screenshot:
+      output: "login_success.png"
