@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  mrbrowser:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: mrbrowser:latest
+    container_name: mrbrowser
+    restart: unless-stopped
+    ports:
+      - "${MRBROWSER_PORT:-7331}:7331"
+    volumes:
+      - mrbrowser_data:/app/data
+      - mrbrowser_screenshots:/app/screenshots
+      # Mount workflow files from host
+      - ../examples:/app/workflows:ro
+    environment:
+      MRBROWSER_PORT: "${MRBROWSER_PORT:-7331}"
+      MRBROWSER_HEADLESS: "${MRBROWSER_HEADLESS:-true}"
+      MRBROWSER_NO_SANDBOX: "true"       # Required in Docker
+      MRBROWSER_CHROMIUM_PATH: "/usr/bin/chromium"
+      MRBROWSER_DB_PATH: "/app/data/mrbrowser.db"
+      MRBROWSER_LOG_LEVEL: "${MRBROWSER_LOG_LEVEL:-info}"
+    shm_size: "256m"                      # Chromium needs shared memory
+    cap_add:
+      - SYS_ADMIN                         # Required for Chromium sandboxing workaround
+    security_opt:
+      - seccomp:unconfined                 # Required for Chromium in Docker
+    healthcheck:
+      test: ["CMD", "mr-browser", "--help"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+        reservations:
+          memory: 256M
+
+  # Optional: PostgreSQL for production persistence
+  postgres:
+    image: postgres:16-alpine
+    container_name: mrbrowser_db
+    restart: unless-stopped
+    profiles:
+      - production
+    environment:
+      POSTGRES_DB: mrbrowser
+      POSTGRES_USER: mrbrowser
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-changeme}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mrbrowser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mrbrowser_data:
+  mrbrowser_screenshots:
+  postgres_data:
