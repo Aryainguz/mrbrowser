@@ -1,0 +1,21 @@
+name: example-search
+description: "A simple search flow demonstrating scrolling and clicking"
+
+steps:
+  - open:
+      url: https://en.wikipedia.org/wiki/Main_Page
+
+  - type:
+      target: "Search Wikipedia"
+      value: "Browser automation"
+      enter: true
+
+  - wait:
+      seconds: 1
+
+  - scroll:
+      direction: down
+      pixels: 500
+
+  - screenshot:
+      output: "search_results.png"
