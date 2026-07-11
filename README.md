@@ -1,4 +1,5 @@
-# Mr. Browser
+<img width="554" height="554" alt="mrbrowser" src="https://github.com/user-attachments/assets/6acb3eb2-5317-42e9-82a4-a96e7856501f" />
+
 
 [![Go](https://img.shields.io/badge/Go-1.22+-blue?logo=go)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -9,7 +10,11 @@
 It replaces fragile CSS selector-based automation with intent-driven, self-healing browser control.
 
 ### See it in action (Fifa World Cup Latest YouTube Videos & Morning Tech Briefing Workflow)
-https://github.com/Aryainguz/mrbrowser/raw/master/demo.mp4
+
+
+https://github.com/user-attachments/assets/c9709fe8-227c-4d49-952d-ea5557bc9322
+
+
 
 ```
 User intent
