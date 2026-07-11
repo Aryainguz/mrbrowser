@@ -1,6 +1,7 @@
 # Mr. Browser
 
-[![Go](https://img.shields.io/badge/Go-1.22-blue?logo=go)](https://golang.org)
+[![Go](https://img.shields.io/badge/Go-1.22+-blue?logo=go)](https://golang.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Self-Hosted](https://img.shields.io/badge/self--hosted-friendly-brightgreen)]()
 
 **Mr. Browser** is an open-source, self-hosted browser automation intelligence engine.
@@ -40,7 +41,7 @@ Recovery           ← fingerprint-based self-healing
 ### Run with Docker
 
 ```bash
-git clone https://github.com/mrbrowser/mrbrowser
+git clone https://github.com/Aryainguz/mrbrowser
 cd mrbrowser
 cp docker/.env.example docker/.env
 docker compose -f docker/docker-compose.yml up
