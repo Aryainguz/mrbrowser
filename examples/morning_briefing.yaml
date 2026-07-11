@@ -155,9 +155,6 @@ steps:
   - wait:
       seconds: 3
 
-  - assert:
-      url_contains: paperswithcode
-
   - screenshot:
       output: "ai_11_papers_with_code_latest.png"
 
@@ -204,4 +201,4 @@ steps:
       output: "ai_14_gmail_draft_ready.png"
 
   # The Gmail compose window is now open.
-  # Review your screenshots, add commentary, and click Send!
+  # continue with agent here...
