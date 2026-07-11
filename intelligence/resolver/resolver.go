@@ -3,6 +3,7 @@ package resolver
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/mrbrowser/mrbrowser/core/browser"
 	"github.com/mrbrowser/mrbrowser/intelligence/dom"
@@ -59,6 +60,18 @@ func (r *Resolver) Resolve(target string, elements []*dom.PageElement) (*browser
 		telemetry.F("role", intent.InferredRole),
 		telemetry.F("type", intent.InferredType),
 	)
+
+	// Allow exact CSS selector overrides
+	if strings.HasPrefix(target, "css=") {
+		sel := strings.TrimPrefix(target, "css=")
+		for _, el := range elements {
+			if el.Selector == sel || el.Attributes["id"] == strings.TrimPrefix(sel, "#") || el.Attributes["class"] == strings.TrimPrefix(sel, ".") {
+				browserEl := el.ToBrowserElement()
+				browserEl.Confidence = 1.0
+				return browserEl, []ScoredCandidate{{Element: browserEl, Confidence: 1.0}}, nil
+			}
+		}
+	}
 
 	candidates := make([]ScoredCandidate, 0, len(elements))
 	for _, el := range elements {

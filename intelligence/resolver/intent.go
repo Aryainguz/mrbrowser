@@ -141,12 +141,9 @@ func extractKeywordsAndNoun(tokens []string) (keywords []string, noun string) {
 		}
 		if n, ok := elementNouns[t]; ok {
 			noun = n
-			continue
 		}
-		if actionWords[t] != "" {
-			// Action words inform the type but aren't content keywords
-			continue
-		}
+		// We still add nouns and action words to keywords because they are 
+		// extremely valuable for text matching (e.g. matching placeholder="Search")
 		keywords = append(keywords, t)
 	}
 	return keywords, noun

@@ -3,11 +3,11 @@ description: "A simple search flow demonstrating scrolling and clicking"
 
 steps:
   - open:
-      url: https://en.wikipedia.org/wiki/Main_Page
+      url: https://www.youtube.com
 
   - type:
-      target: "Search Wikipedia"
-      value: "Browser automation"
+      target: "Search query"
+      value: "Aryan Inguz"
       enter: true
 
   - wait:
