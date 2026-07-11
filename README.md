@@ -8,7 +8,7 @@
 
 It replaces fragile CSS selector-based automation with intent-driven, self-healing browser control.
 
-### See it in action (Morning Tech Briefing Workflow)
+### See it in action (Fifa World Cup Latest YouTube Videos & Morning Tech Briefing Workflow)
 https://github.com/Aryainguz/mrbrowser/raw/master/demo.mp4
 
 ```
