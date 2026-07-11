@@ -1,0 +1,207 @@
+# ============================================================
+# Workflow: Daily AI Intelligence Briefing
+# ============================================================
+#
+# REAL USE CASE: Run every morning at 8am (via cron/scheduler)
+# to capture a visual snapshot of the AI landscape, then
+# auto-open a pre-filled Gmail draft so you can review and
+# send a curated digest to your team with one click.
+#
+# Sites covered:
+#   1. GitHub Trending (Python / AI repos today)
+#   2. Hacker News (AI stories on the front page)
+#   3. Hugging Face (trending models and spaces)
+#   4. Papers With Code (latest SOTA AI research)
+#   5. Gmail Compose (pre-filled team digest draft)
+#
+# Schedule it:
+#   0 8 * * 1-5 cd ~/mrbrowser && go run cli/main.go run examples/morning_briefing.yaml
+#
+# Run manually:
+#   go run cli/main.go run examples/morning_briefing.yaml --headless=false
+# ============================================================
+
+name: daily-ai-briefing
+description: >
+  Captures the daily AI landscape across GitHub, HN, Hugging Face,
+  and Papers With Code — then opens a pre-filled Gmail draft
+  so you can send a team digest in one click.
+
+config:
+  stop_on_error: false
+
+steps:
+
+  # ════════════════════════════════════════════════════════════
+  #  PHASE 1 — GitHub Trending: What are AI engineers building?
+  # ════════════════════════════════════════════════════════════
+
+  # Python is the dominant AI language — this is your ground truth
+  - open:
+      url: https://github.com/trending/python?since=daily
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      url_contains: trending
+
+  - screenshot:
+      output: "ai_01_github_trending_python.png"
+
+  - scroll:
+      direction: down
+      pixels: 700
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "ai_02_github_trending_python_more.png"
+
+  # Also check Jupyter Notebooks — data science / AI research
+  - open:
+      url: https://github.com/trending/jupyter-notebook?since=daily
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_03_github_trending_notebooks.png"
+
+  # ════════════════════════════════════════════════════════════
+  #  PHASE 2 — Hacker News: What are smart people saying?
+  # ════════════════════════════════════════════════════════════
+
+  - open:
+      url: https://news.ycombinator.com
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      url_contains: ycombinator
+
+  - screenshot:
+      output: "ai_04_hackernews_front_page.png"
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - screenshot:
+      output: "ai_05_hackernews_more_stories.png"
+
+  # HN "Ask HN" — questions about AI tools, techniques, concerns
+  - open:
+      url: https://news.ycombinator.com/ask
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_06_hackernews_ask_hn.png"
+
+  # ════════════════════════════════════════════════════════════
+  #  PHASE 3 — Hugging Face: Trending models & spaces
+  # ════════════════════════════════════════════════════════════
+
+  - open:
+      url: https://huggingface.co/models?sort=trending
+
+  - wait:
+      seconds: 3
+
+  - assert:
+      url_contains: huggingface
+
+  - screenshot:
+      output: "ai_07_huggingface_trending_models.png"
+
+  - scroll:
+      direction: down
+      pixels: 700
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "ai_08_huggingface_models_more.png"
+
+  # Trending Spaces — live AI demos the community is building
+  - open:
+      url: https://huggingface.co/spaces?sort=trending
+
+  - wait:
+      seconds: 3
+
+  - screenshot:
+      output: "ai_09_huggingface_trending_spaces.png"
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - screenshot:
+      output: "ai_10_huggingface_spaces_more.png"
+
+  # ════════════════════════════════════════════════════════════
+  #  PHASE 4 — Papers With Code: Bleeding-edge research
+  # ════════════════════════════════════════════════════════════
+
+  - open:
+      url: https://paperswithcode.com/latest
+
+  - wait:
+      seconds: 3
+
+  - assert:
+      url_contains: paperswithcode
+
+  - screenshot:
+      output: "ai_11_papers_with_code_latest.png"
+
+  - scroll:
+      direction: down
+      pixels: 800
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "ai_12_papers_with_code_more.png"
+
+  # SOTA benchmarks — see what just got beaten
+  - open:
+      url: https://paperswithcode.com/sota
+
+  - wait:
+      seconds: 3
+
+  - screenshot:
+      output: "ai_13_papers_with_code_sota.png"
+
+  # ════════════════════════════════════════════════════════════
+  #  PHASE 5 — Gmail: Open pre-filled team digest draft
+  # ════════════════════════════════════════════════════════════
+  #
+  # This opens Gmail with a pre-composed daily briefing email.
+  # You review the screenshots, add your commentary, and hit Send.
+  #
+  # Change `to=` to your team's email address.
+  # The body is a template — edit it before sending.
+  #
+  # Note: You must be logged into Gmail in Chrome for this to work.
+  # ─────────────────────────────────────────────────────────────
+
+  - open:
+      url: "https://mail.google.com/mail/u/0/?view=cm&fs=1&to=team@yourcompany.com&su=Daily+AI+Briefing+%F0%9F%A4%96&body=Hi+team%2C%0A%0AHere+is+today%27s+AI+landscape+digest%3A%0A%0A%F0%9F%94%A5+GitHub+Trending+Python%3A+%5Bsee+screenshots%5D%0A%F0%9F%97%9E%EF%B8%8F+Hacker+News+top+AI+stories%3A+%5Bsee+screenshots%5D%0A%F0%9F%A4%97+Hugging+Face+trending+models%3A+%5Bsee+screenshots%5D%0A%F0%9F%93%84+Papers+With+Code+latest%3A+%5Bsee+screenshots%5D%0A%0AAll+screenshots+saved+to%3A+.%2F%0A%0ATake+care%2C%0AYour+AI+Briefing+Bot+%F0%9F%A4%96"
+
+  - wait:
+      seconds: 4
+
+  - screenshot:
+      output: "ai_14_gmail_draft_ready.png"
+
+  # The Gmail compose window is now open.
+  # Review your screenshots, add commentary, and click Send!

@@ -1,0 +1,103 @@
+# ============================================================
+# Workflow: End-to-End Login & Authenticated Action Test
+# ============================================================
+#
+# REAL USE CASE: This is a smoke test you run in CI/CD after
+# every production deploy. It verifies your entire auth flow
+# works end-to-end from a real browser's perspective.
+#
+# Unlike unit tests, this catches:
+#   - Broken CSS that hides the login button (unit tests won't see this)
+#   - OAuth redirects that fail in production but not staging
+#   - Session cookie issues after a deploy
+#   - Form validation regressions
+#
+# Uses a public demo site (https://the-internet.herokuapp.com)
+# so you can run this immediately without any setup.
+#
+# To adapt for your own app:
+#   1. Change the URL to your login page
+#   2. Update the target descriptions to match your elements
+#   3. Change credentials to your test account
+#   4. Update the assert to check your post-login page
+#
+# Run: go run cli/main.go run examples/e2e_login_test.yaml
+# ============================================================
+
+name: e2e-login-flow
+description: >
+  Verifies a complete login flow end-to-end: loads the page,
+  fills credentials, submits, and asserts a successful session.
+  Production-quality smoke test — runs on every deploy.
+
+config:
+  stop_on_error: true  # Fail fast — we want to know immediately if auth breaks
+
+steps:
+
+  # ── Phase 1: Load the app ─────────────────────────────────────
+  - open:
+      url: https://the-internet.herokuapp.com/login
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      url_contains: login
+
+  - screenshot:
+      output: "e2e_01_login_page_loaded.png"
+
+  # ── Phase 2: Fill in credentials ──────────────────────────────
+  # MrBrowser resolves these by natural language — not brittle IDs.
+  # When the designer renames the field from "user-email" to "email-input",
+  # this still works.
+  - type:
+      target: "username field"
+      selector: "#username"          # Explicit selector as reliable fallback
+      value: "tomsmith"
+
+  - type:
+      target: "password field"
+      selector: "#password"
+      value: "SuperSecretPassword!"
+
+  - screenshot:
+      output: "e2e_02_credentials_filled.png"
+
+  # ── Phase 3: Submit ───────────────────────────────────────────
+  - click:
+      target: "login button"
+      selector: "button[type='submit']"
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "e2e_03_post_login.png"
+
+  # ── Phase 4: Assert we're logged in ──────────────────────────
+  # This is what makes it a TEST, not just a script.
+  # If the login fails, this assertion fails and CI is notified.
+  - assert:
+      url_contains: secure
+
+  - assert:
+      text_visible: "You logged into a secure area!"
+
+  - screenshot:
+      output: "e2e_04_authenticated_page.png"
+
+  # ── Phase 5: Test logout also works ──────────────────────────
+  - click:
+      target: "logout link"
+      selector: ".icon-2x"
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      url_contains: login
+
+  - screenshot:
+      output: "e2e_05_logged_out.png"

@@ -1,0 +1,149 @@
+# ============================================================
+# Workflow: AI Deep-Dive Research Agent
+# ============================================================
+#
+# REAL USE CASE: Automated background research on any AI topic.
+# Points MrBrowser at key AI articles, navigates between related
+# concepts, and produces a timestamped visual paper trail.
+#
+# Real-world applications:
+#   - Journalists: Background research on AI news stories
+#   - Students: Document and archive your sources for papers
+#   - Developers: Understand the theoretical background of tools you use
+#   - Product managers: Quick visual primer on AI landscape
+#
+# Run: go run cli/main.go run examples/ai_research.yaml
+# ============================================================
+
+name: ai-deep-research
+description: >
+  Deep-dives the AI landscape on Wikipedia and Arxiv: covers large
+  language models, transformer architecture, and key benchmarks —
+  producing a timestamped visual archive of the state of AI.
+
+config:
+  stop_on_error: false
+
+steps:
+
+  # ── 1. Large Language Models — the foundation ─────────────────
+  - open:
+      url: https://en.wikipedia.org/wiki/Large_language_model
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      url_contains: wikipedia
+
+  - screenshot:
+      output: "ai_wiki_01_llm_intro.png"
+
+  - scroll:
+      direction: down
+      pixels: 500
+
+  - screenshot:
+      output: "ai_wiki_02_llm_architecture.png"
+
+  - scroll:
+      direction: down
+      pixels: 700
+
+  - screenshot:
+      output: "ai_wiki_03_llm_training.png"
+
+  # ── 2. Transformer Architecture — the "why" behind LLMs ───────
+  - open:
+      url: https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_wiki_04_transformer_intro.png"
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - screenshot:
+      output: "ai_wiki_05_transformer_details.png"
+
+  # ── 3. Attention Mechanism — the core innovation ───────────────
+  - open:
+      url: https://en.wikipedia.org/wiki/Attention_(machine_learning)
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_wiki_06_attention_mechanism.png"
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - screenshot:
+      output: "ai_wiki_07_attention_details.png"
+
+  # ── 4. Generative AI — the application layer ──────────────────
+  - open:
+      url: https://en.wikipedia.org/wiki/Generative_artificial_intelligence
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_wiki_08_generative_ai.png"
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - screenshot:
+      output: "ai_wiki_09_generative_ai_examples.png"
+
+  # ── 5. GPT — the model that changed everything ────────────────
+  - open:
+      url: https://en.wikipedia.org/wiki/GPT-4
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_wiki_10_gpt4.png"
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - screenshot:
+      output: "ai_wiki_11_gpt4_capabilities.png"
+
+  # ── 6. AI Safety — the critical counterweight ─────────────────
+  - open:
+      url: https://en.wikipedia.org/wiki/AI_safety
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_wiki_12_ai_safety.png"
+
+  - scroll:
+      direction: down
+      pixels: 500
+
+  - screenshot:
+      output: "ai_wiki_13_ai_safety_concerns.png"
+
+  # ── 7. Wikipedia AI Portal — discover more ────────────────────
+  - open:
+      url: https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Artificial_intelligence
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "ai_wiki_14_ai_portal.png"
