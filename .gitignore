@@ -1,0 +1,66 @@
+# Binaries
+bin/
+*.exe
+*.test
+*.out
+
+# Build output
+dist/
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env
+!docker/.env.example
+
+# Screenshots / downloads (runtime output)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+!docs/**
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Go
+vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Logs
+*.log
+logs/
+
+# Temp
+tmp/
+temp/
+
+# Node & TypeScript SDK
+node_modules/
+.npm/
+
+# VitePress Docs
+docs/.vitepress/dist/
+docs/.vitepress/cache/
