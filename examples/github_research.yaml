@@ -1,0 +1,176 @@
+# ============================================================
+# MrBrowser Complex Example: GitHub Trending Research Agent
+# ============================================================
+#
+# This workflow demonstrates what makes MrBrowser different from
+# Selenium/Playwright. Not a single CSS selector or XPath is used.
+# Every interaction is driven by plain English intent.
+#
+# What this does:
+#  1. Opens GitHub Trending and screenshots the landscape
+#  2. Navigates to the top trending Go repository
+#  3. Reads the README and takes a detailed screenshot
+#  4. Crosses over to Hacker News to find community discussion
+#  5. Searches HN for the project name
+#  6. Scrolls through top comments and takes a final report screenshot
+#
+# Run it:
+#   go run cli/main.go run examples/github_research.yaml --headless=false
+# ============================================================
+
+name: github-trending-research
+description: >
+  A multi-site research agent that discovers what's trending on GitHub,
+  visits the top repository, then cross-references it against Hacker News
+  community discussion — all using plain-English element targeting.
+
+config:
+  stop_on_error: false   # Continue even if one step fails (resilient mode)
+
+steps:
+
+  # ── Phase 1: GitHub Trending ─────────────────────────────────
+  - open:
+      url: https://github.com/trending/go?since=weekly&spoken_language_code=en
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      url_contains: trending
+
+  - screenshot:
+      output: "01_github_trending_landscape.png"
+
+  # Scroll down to see more trending repos
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "02_github_trending_more.png"
+
+  # ── Phase 2: Visit the top trending Go repo ──────────────────
+  # MrBrowser finds the first repo link using pure NLP — no nth-child() hacks
+  - scroll:
+      direction: top
+
+  - wait:
+      seconds: 1
+
+  - click:
+      target: "first repository link in trending list"
+      selector: "article.Box-row:first-child h2 a"
+
+  - wait:
+      seconds: 3
+
+  - screenshot:
+      output: "03_repo_homepage.png"
+
+  - scroll:
+      direction: down
+      pixels: 500
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "04_repo_readme.png"
+
+  # Assert we landed on a real GitHub repo page
+  - assert:
+      url_contains: github.com
+
+  # ── Phase 3: Check the star count and activity ───────────────
+  - scroll:
+      direction: top
+
+  - hover:
+      target: "star count"
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "05_repo_stars.png"
+
+  # ── Phase 4: Cross to Hacker News ────────────────────────────
+  - open:
+      url: https://news.ycombinator.com
+
+  - wait:
+      seconds: 2
+
+  - assert:
+      url_contains: ycombinator
+
+  - screenshot:
+      output: "06_hackernews_frontpage.png"
+
+  # Scroll through HN front page to see what's hot
+  - scroll:
+      direction: down
+      pixels: 800
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "07_hackernews_more_stories.png"
+
+  # ── Phase 5: Search Hacker News for Go/GitHub discourse ──────
+  - open:
+      url: https://hn.algolia.com
+
+  - wait:
+      seconds: 2
+
+  - type:
+      target: "Search query input"
+      value: "Go programming language GitHub trending"
+      enter: true
+
+  - wait:
+      seconds: 2
+
+  - screenshot:
+      output: "08_hackernews_search_results.png"
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "09_hackernews_search_scrolled.png"
+
+  # ── Phase 6: Return to GitHub, demonstrate self-healing ──────
+  # We navigate back to GitHub without hardcoding anything.
+  # If the page layout changes tomorrow, MrBrowser adapts.
+  - open:
+      url: https://github.com/trending
+
+  - wait:
+      seconds: 2
+
+  - hover:
+      target: "language filter dropdown"
+
+  - wait:
+      seconds: 1
+
+  - screenshot:
+      output: "10_github_language_filter.png"
+
+  - scroll:
+      direction: down
+      pixels: 1000
+
+  - screenshot:
+      output: "11_final_trending_report.png"
