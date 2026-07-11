@@ -25,7 +25,7 @@ description: >
   community discussion — all using plain-English element targeting.
 
 config:
-  stop_on_error: false   # Continue even if one step fails (resilient mode)
+  stop_on_error: false
 
 steps:
 
@@ -85,18 +85,15 @@ steps:
   - assert:
       url_contains: github.com
 
-  # ── Phase 3: Check the star count and activity ───────────────
+  # ── Phase 3: Scroll back to top and capture full repo header ─
   - scroll:
       direction: top
-
-  - hover:
-      target: "star count"
 
   - wait:
       seconds: 1
 
   - screenshot:
-      output: "05_repo_stars.png"
+      output: "05_repo_header_and_stars.png"
 
   # ── Phase 4: Cross to Hacker News ────────────────────────────
   - open:
@@ -122,23 +119,19 @@ steps:
   - screenshot:
       output: "07_hackernews_more_stories.png"
 
-  # ── Phase 5: Search Hacker News for Go/GitHub discourse ──────
+  # ── Phase 5: Cross to Go Package Registry ────────────────────
+  # Check the official Go package index for related packages
   - open:
-      url: https://hn.algolia.com
+      url: https://pkg.go.dev/search?q=browser+automation
 
   - wait:
-      seconds: 2
+      seconds: 3
 
-  - type:
-      target: "Search query input"
-      value: "Go programming language GitHub trending"
-      enter: true
-
-  - wait:
-      seconds: 2
+  - assert:
+      url_contains: pkg.go.dev
 
   - screenshot:
-      output: "08_hackernews_search_results.png"
+      output: "08_go_packages_search.png"
 
   - scroll:
       direction: down
@@ -147,30 +140,26 @@ steps:
   - wait:
       seconds: 1
 
+
   - screenshot:
       output: "09_hackernews_search_scrolled.png"
 
-  # ── Phase 6: Return to GitHub, demonstrate self-healing ──────
-  # We navigate back to GitHub without hardcoding anything.
-  # If the page layout changes tomorrow, MrBrowser adapts.
+  # ── Phase 6: Return to GitHub Trending — final overview ─────
   - open:
       url: https://github.com/trending
 
   - wait:
       seconds: 2
 
-  - hover:
-      target: "language filter dropdown"
-
-  - wait:
-      seconds: 1
-
   - screenshot:
-      output: "10_github_language_filter.png"
+      output: "10_github_trending_overview.png"
 
   - scroll:
       direction: down
       pixels: 1000
+
+  - wait:
+      seconds: 1
 
   - screenshot:
       output: "11_final_trending_report.png"

@@ -42,8 +42,8 @@ func DefaultOptions() Options {
 		DisableExtensions: true,
 		WindowWidth:       1920,
 		WindowHeight:      1080,
-		DefaultTimeout:    30 * time.Second,
-		PageLoadTimeout:   30 * time.Second,
+		DefaultTimeout:    5 * time.Minute, // total session lifetime
+		PageLoadTimeout:   60 * time.Second, // per-navigation timeout
 	}
 }
 
