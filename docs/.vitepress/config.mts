@@ -35,7 +35,7 @@ export default defineConfig({
     ],
 
     footer: {
-      message: 'Released under the Apache-2.0 License.',
+      message: 'Released under the MIT License.',
       copyright: 'Copyright © 2026 Mr. Browser Contributors'
     }
   }

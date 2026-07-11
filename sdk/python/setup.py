@@ -10,7 +10,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Mr. Browser Contributors",
-    license="Apache-2.0",
+    license="MIT",
     packages=find_packages(),
     python_requires=">=3.9",
     install_requires=[],  # Zero mandatory dependencies — stdlib only
@@ -20,7 +20,7 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",

@@ -16,7 +16,7 @@
     "playwright"
   ],
   "author": "Mr. Browser Contributors",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^26.1.1",
     "typescript": "^5.0.0"

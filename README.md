@@ -1,7 +1,6 @@
 # Mr. Browser
 
 [![Go](https://img.shields.io/badge/Go-1.22-blue?logo=go)](https://golang.org)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green)](LICENSE)
 [![Self-Hosted](https://img.shields.io/badge/self--hosted-friendly-brightgreen)]()
 
 **Mr. Browser** is an open-source, self-hosted browser automation intelligence engine.
