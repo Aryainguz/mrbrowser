@@ -179,26 +179,5 @@ steps:
       output: "ai_13_papers_with_code_sota.png"
 
   # ════════════════════════════════════════════════════════════
-  #  PHASE 5 — Gmail: Open pre-filled team digest draft
+  #  PHASE 5 — Email //todo
   # ════════════════════════════════════════════════════════════
-  #
-  # This opens Gmail with a pre-composed daily briefing email.
-  # You review the screenshots, add your commentary, and hit Send.
-  #
-  # Change `to=` to your team's email address.
-  # The body is a template — edit it before sending.
-  #
-  # Note: You must be logged into Gmail in Chrome for this to work.
-  # ─────────────────────────────────────────────────────────────
-
-  - open:
-      url: "https://mail.google.com/mail/u/0/?view=cm&fs=1&to=team@yourcompany.com&su=Daily+AI+Briefing+%F0%9F%A4%96&body=Hi+team%2C%0A%0AHere+is+today%27s+AI+landscape+digest%3A%0A%0A%F0%9F%94%A5+GitHub+Trending+Python%3A+%5Bsee+screenshots%5D%0A%F0%9F%97%9E%EF%B8%8F+Hacker+News+top+AI+stories%3A+%5Bsee+screenshots%5D%0A%F0%9F%A4%97+Hugging+Face+trending+models%3A+%5Bsee+screenshots%5D%0A%F0%9F%93%84+Papers+With+Code+latest%3A+%5Bsee+screenshots%5D%0A%0AAll+screenshots+saved+to%3A+.%2F%0A%0ATake+care%2C%0AYour+AI+Briefing+Bot+%F0%9F%A4%96"
-
-  - wait:
-      seconds: 4
-
-  - screenshot:
-      output: "ai_14_gmail_draft_ready.png"
-
-  # The Gmail compose window is now open.
-  # continue with agent here...
