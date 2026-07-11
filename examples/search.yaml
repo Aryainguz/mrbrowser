@@ -7,7 +7,7 @@ steps:
 
   - type:
       target: "Search query"
-      value: "Aryan Inguz"
+      value: "Fifa World Cup 2022"
       enter: true
 
   - wait:
