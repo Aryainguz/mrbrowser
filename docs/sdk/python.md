@@ -12,8 +12,26 @@ The SDK acts as a strict thin-client. All heavy lifting, DOM extraction, NLP res
 
 ## Installation
 
+Currently, the SDK is available directly from the repository. We recommend installing it locally from source.
+
+### Local Installation
+
+Clone the repository and install the package using `pip`:
+
 ```bash
-pip install mrbrowser
+git clone https://github.com/mrbrowser/mrbrowser.git
+cd mrbrowser/sdk/python
+pip install .
+```
+
+### Publishing to PyPI
+
+If you wish to publish this package internally or to PyPI, you can build and upload it using `twine`:
+
+```bash
+pip install build twine
+python -m build
+twine upload dist/*
 ```
 
 ---

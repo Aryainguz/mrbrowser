@@ -14,8 +14,37 @@ It provides **strict type-safety** using modern ES modules. Every response, payl
 
 Requires Node.js >= 18.0.0.
 
+Currently, the SDK is available directly from the repository. We recommend installing it locally from source.
+
+### Local Installation
+
+Clone the repository and build the package:
+
 ```bash
-npm install @mrbrowser/sdk
+git clone https://github.com/mrbrowser/mrbrowser.git
+cd mrbrowser/sdk/typescript
+npm install
+npm run build
+```
+
+Then, you can link it to your project:
+```bash
+npm link
+# Inside your project folder
+npm link @mrbrowser/sdk
+```
+
+Or install it directly via the local path in your project:
+```bash
+npm install /path/to/mrbrowser/sdk/typescript
+```
+
+### Publishing to NPM
+
+If you want to publish the package to NPM, ensure you are logged in and run:
+
+```bash
+npm publish --access public
 ```
 
 ---
