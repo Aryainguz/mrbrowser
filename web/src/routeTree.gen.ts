@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs.index'
@@ -23,11 +22,6 @@ import { Route as DocsCliRouteImport } from './routes/docs.cli'
 import { Route as DocsChangelogRouteImport } from './routes/docs.changelog'
 import { Route as DocsArchitectureRouteImport } from './routes/docs.architecture'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
@@ -92,7 +86,6 @@ const DocsArchitectureRoute = DocsArchitectureRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRouteWithChildren
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/architecture': typeof DocsArchitectureRoute
   '/docs/changelog': typeof DocsChangelogRoute
   '/docs/cli': typeof DocsCliRoute
@@ -106,7 +99,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/architecture': typeof DocsArchitectureRoute
   '/docs/changelog': typeof DocsChangelogRoute
   '/docs/cli': typeof DocsCliRoute
@@ -122,7 +114,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/docs': typeof DocsRouteWithChildren
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/docs/architecture': typeof DocsArchitectureRoute
   '/docs/changelog': typeof DocsChangelogRoute
   '/docs/cli': typeof DocsCliRoute
@@ -139,7 +130,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/docs'
-    | '/sitemap.xml'
     | '/docs/architecture'
     | '/docs/changelog'
     | '/docs/cli'
@@ -153,7 +143,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/sitemap.xml'
     | '/docs/architecture'
     | '/docs/changelog'
     | '/docs/cli'
@@ -168,7 +157,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/docs'
-    | '/sitemap.xml'
     | '/docs/architecture'
     | '/docs/changelog'
     | '/docs/cli'
@@ -184,18 +172,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DocsRoute: typeof DocsRouteWithChildren
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/docs': {
       id: '/docs'
       path: '/docs'
@@ -314,7 +294,6 @@ const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DocsRoute: DocsRouteWithChildren,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
