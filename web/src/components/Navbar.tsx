@@ -30,7 +30,7 @@ export function Navbar() {
             Docs
           </Link>
           <a
-            href="https://github.com/mrbrowser/mrbrowser"
+            href="https://github.com/aryainguz/mrbrowser"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 rounded-md border border-primary/60 bg-primary/10 px-4 py-1.5 font-mono text-xs font-semibold text-primary shadow-glow transition-all hover:bg-primary hover:text-primary-foreground hover:shadow-glow-strong"

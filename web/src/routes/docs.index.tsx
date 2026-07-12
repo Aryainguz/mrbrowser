@@ -27,7 +27,7 @@ const INSTALL = `# Docker (recommended — includes engine + Chromium)
 docker compose -f docker/docker-compose.yml up -d
 
 # Build from source (requires Go 1.22+)
-git clone https://github.com/mrbrowser/mrbrowser.git
+git clone https://github.com/aryainguz/mrbrowser.git
 cd mrbrowser
 make build           # produces bin/mr-browser
 make install         # copies to /usr/local/bin/mr-browser

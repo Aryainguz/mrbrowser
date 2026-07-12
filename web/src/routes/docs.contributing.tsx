@@ -25,7 +25,7 @@ export const Route = createFileRoute("/docs/contributing")({
 
 const SETUP = `# Prerequisites: Go 1.22+, Chromium, make
 
-git clone https://github.com/mrbrowser/mrbrowser.git
+git clone https://github.com/aryainguz/mrbrowser.git
 cd mrbrowser
 
 # Download Go dependencies

@@ -11,7 +11,7 @@ Currently, the SDK is available directly from the repository. We recommend insta
 Clone the repository and install the package using `pip`:
 
 ```bash
-git clone https://github.com/mrbrowser/mrbrowser.git
+git clone https://github.com/aryainguz/mrbrowser.git
 cd mrbrowser/sdk/python
 pip install .
 ```
@@ -39,4 +39,4 @@ with MrBrowser(host="localhost", port=7331) as browser:
     page.click("Login")
 ```
 
-For more details, see the full [documentation](https://github.com/mrbrowser/mrbrowser/tree/main/docs/sdk/python.md).
+For more details, see the full [documentation](https://github.com/aryainguz/mrbrowser/tree/main/docs/sdk/python.md).
