@@ -1,4 +1,5 @@
-<img width="290" alt="mrbrowser" src="./mrbrowser.png" />
+<img width="601" height="404" alt="mrbrowser" src="https://github.com/user-attachments/assets/c035cc7b-9c68-4158-b3b8-8a13637c381f" />
+
 
 ---
 
