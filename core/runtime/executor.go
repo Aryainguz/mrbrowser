@@ -8,6 +8,7 @@ import (
 
 	"github.com/mrbrowser/mrbrowser/core/actions"
 	"github.com/mrbrowser/mrbrowser/core/browser"
+	"github.com/mrbrowser/mrbrowser/core/report"
 	"github.com/mrbrowser/mrbrowser/intelligence/dom"
 	"github.com/mrbrowser/mrbrowser/intelligence/resolver"
 	"github.com/mrbrowser/mrbrowser/memory"
@@ -43,6 +44,7 @@ type Executor struct {
 	extractor   *dom.Extractor
 	log         *telemetry.Logger
 	stopOnError bool
+	tracker     *report.Tracker
 }
 
 // ExecutorOptions configures the Executor.
@@ -75,6 +77,7 @@ func NewExecutor(session *browser.Session, opts ExecutorOptions) (*Executor, err
 		extractor:   dom.NewExtractor(session.Page),
 		log:         telemetry.New("executor"),
 		stopOnError: opts.StopOnError,
+		tracker:     report.NewTracker(),
 	}, nil
 }
 
@@ -82,6 +85,8 @@ func NewExecutor(session *browser.Session, opts ExecutorOptions) (*Executor, err
 func (e *Executor) Run(task *Task) (*ExecutionResult, error) {
 	started := time.Now()
 	e.log.Info("Starting task", telemetry.F("name", task.Name), telemetry.F("steps", len(task.Steps)))
+
+	e.session.Page.EnableNetworkTracking(e.tracker)
 
 	result := &ExecutionResult{
 		TaskName: task.Name,
@@ -91,8 +96,12 @@ func (e *Executor) Run(task *Task) (*ExecutionResult, error) {
 		stepNum := i + 1
 		e.log.Step(fmt.Sprintf("Step %d/%d [%s]", stepNum, len(task.Steps), step.Kind()))
 
+		e.tracker.StartStep(stepNum, step.Kind(), getStepTarget(&step))
+
 		stepResult, err := e.runStep(task.Name, stepNum, &step)
 		result.StepResults = append(result.StepResults, stepResult)
+		
+		e.tracker.EndStep(err)
 
 		if err != nil {
 			e.log.Error("Step failed",
@@ -104,6 +113,11 @@ func (e *Executor) Run(task *Task) (*ExecutionResult, error) {
 				result.Success = false
 				result.Error = fmt.Sprintf("step %d [%s]: %v", stepNum, step.Kind(), err)
 				result.Duration = time.Since(started)
+				
+				if task.Config.GenerateReport != "" {
+					_ = e.tracker.GenerateMarkdown(task.Name, task.Config.GenerateReport)
+				}
+				
 				return result, nil
 			}
 		} else {
@@ -117,7 +131,19 @@ func (e *Executor) Run(task *Task) (*ExecutionResult, error) {
 		telemetry.F("name", task.Name),
 		telemetry.F("duration", result.Duration.Round(time.Millisecond)),
 	)
+	
+	if task.Config.GenerateReport != "" {
+		_ = e.tracker.GenerateMarkdown(task.Name, task.Config.GenerateReport)
+	}
+	
 	return result, nil
+}
+
+func getStepTarget(s *Step) string {
+	if s.Click != nil { return s.Click.Target }
+	if s.Type != nil { return s.Type.Target }
+	if s.Open != nil { return s.Open.URL }
+	return ""
 }
 
 func (e *Executor) runStep(taskName string, stepNum int, step *Step) (StepResult, error) {
@@ -129,13 +155,13 @@ func (e *Executor) runStep(taskName string, stepNum int, step *Step) (StepResult
 	case "open":
 		err = e.stepOpen(step.Open)
 	case "click":
-		sr.Recovered, err = e.stepClick(taskName, step.Click)
+		sr.Recovered, err = e.stepClick(taskName, stepNum, step.Click)
 	case "type":
-		sr.Recovered, err = e.stepType(taskName, step.Type)
+		sr.Recovered, err = e.stepType(taskName, stepNum, step.Type)
 	case "scroll":
 		err = e.stepScroll(step.Scroll)
 	case "hover":
-		_, err = e.stepHover(taskName, step.Hover)
+		_, err = e.stepHover(taskName, stepNum, step.Hover)
 	case "screenshot":
 		err = e.stepScreenshot(step.Screenshot)
 	case "wait":
@@ -158,17 +184,72 @@ func (e *Executor) runStep(taskName string, stepNum int, step *Step) (StepResult
 	return sr, err
 }
 
+func (e *Executor) highlightAndScreenshot(el *browser.Element, taskName string, stepNum int) {
+	if el == nil || el.Selector == "" {
+		return
+	}
+
+	escapedSelector := strings.ReplaceAll(el.Selector, `"`, `\"`)
+	script := fmt.Sprintf(`
+		(function() {
+			var el = document.querySelector("%s");
+			if (!el) return "";
+			var oldOutline = el.style.outline;
+			var oldOffset = el.style.outlineOffset;
+			el.style.outline = "4px solid red";
+			el.style.outlineOffset = "2px";
+			return oldOutline + "|||" + oldOffset;
+		})()
+	`, escapedSelector)
+
+	result, err := e.session.Page.ExecuteJS(script)
+	if err != nil {
+		return
+	}
+
+	// Capture the screenshot with the highlight
+	buf, _ := e.session.Page.Screenshot()
+	if len(buf) > 0 {
+		output := fmt.Sprintf("highlight_%s_step%d.png", taskName, stepNum)
+		if os.WriteFile(output, buf, 0644) == nil {
+			e.tracker.RecordScreenshot(output)
+		}
+	}
+
+	// Restore the old outline
+	if resStr, ok := result.(string); ok {
+		parts := strings.SplitN(resStr, "|||", 2)
+		if len(parts) == 2 {
+			oldOutline := strings.ReplaceAll(parts[0], `"`, `\"`)
+			oldOffset := strings.ReplaceAll(parts[1], `"`, `\"`)
+			
+			restoreScript := fmt.Sprintf(`
+				(function() {
+					var el = document.querySelector("%s");
+					if (el) {
+						el.style.outline = "%s";
+						el.style.outlineOffset = "%s";
+					}
+				})()
+			`, escapedSelector, oldOutline, oldOffset)
+			e.session.Page.ExecuteJS(restoreScript)
+		}
+	}
+}
+
 // stepOpen navigates to a URL.
 func (e *Executor) stepOpen(s *OpenStep) error {
 	return e.session.Page.Navigate(s.URL)
 }
 
 // stepClick finds and clicks an element, with self-healing fallback.
-func (e *Executor) stepClick(taskName string, s *ClickStep) (recovered bool, err error) {
+func (e *Executor) stepClick(taskName string, stepNum int, s *ClickStep) (recovered bool, err error) {
 	el, recovered, err := e.resolveElement(taskName, s.Target, s.Selector)
 	if err != nil {
 		return false, err
 	}
+	
+	e.highlightAndScreenshot(el, taskName, stepNum)
 
 	result := e.engine.Click(el)
 	if !result.Success {
@@ -181,11 +262,13 @@ func (e *Executor) stepClick(taskName string, s *ClickStep) (recovered bool, err
 }
 
 // stepType finds an element and types text, with self-healing fallback.
-func (e *Executor) stepType(taskName string, s *TypeStep) (recovered bool, err error) {
+func (e *Executor) stepType(taskName string, stepNum int, s *TypeStep) (recovered bool, err error) {
 	el, recovered, err := e.resolveElement(taskName, s.Target, s.Selector)
 	if err != nil {
 		return false, err
 	}
+
+	e.highlightAndScreenshot(el, taskName, stepNum)
 
 	val := s.Value
 	if s.Enter {
@@ -214,11 +297,14 @@ func (e *Executor) stepScroll(s *ScrollStep) error {
 }
 
 // stepHover hovers over an element.
-func (e *Executor) stepHover(taskName string, s *HoverStep) (recovered bool, err error) {
+func (e *Executor) stepHover(taskName string, stepNum int, s *HoverStep) (recovered bool, err error) {
 	el, recovered, err := e.resolveElement(taskName, s.Target, s.Selector)
 	if err != nil {
 		return false, err
 	}
+
+	e.highlightAndScreenshot(el, taskName, stepNum)
+
 	result := e.engine.Hover(el)
 	if !result.Success {
 		return recovered, fmt.Errorf("hover: %s", result.Error)
@@ -239,6 +325,7 @@ func (e *Executor) stepScreenshot(s *ScreenshotStep) error {
 	if err := os.WriteFile(output, buf, 0644); err != nil {
 		return fmt.Errorf("save screenshot to %q: %w", output, err)
 	}
+	e.tracker.RecordScreenshot(output)
 	e.log.Success("Screenshot saved", telemetry.F("path", output))
 	return nil
 }

@@ -1,0 +1,72 @@
+name: wall-street-agent
+description: >
+  Autonomous AI Stock Analyst. Navigates heavily dynamic financial 
+  dashboards (Yahoo Finance) without a single CSS selector.
+
+config:
+  stop_on_error: false
+  generate_report: "wall_street_report.md"
+
+steps:
+  # ── 1. Load Yahoo Finance ─────────────────────────────────────
+  - open:
+      url: https://finance.yahoo.com/
+
+  - wait:
+      seconds: 4
+
+  - screenshot:
+      output: yf_01_homepage.png
+
+  # ── 2. Search for a Stock (NVDA) ──────────────────────────────
+  - type:
+      target: "Search for news, symbols or companies"
+      value: "NVDA"
+      enter: true
+
+  - wait:
+      seconds: 5
+      
+  - screenshot:
+      output: yf_02_nvda_summary.png
+
+  # ── 3. Navigate the Complex Tab System ────────────────────────
+  # In Selenium, this would be `div > ul > li:nth-child(4) > a`.
+  # Tomorrow, Yahoo will A/B test it and it will break.
+  # Here, we just ask for the Financials tab.
+  - click:
+      target: "Financials"
+
+  - wait:
+      seconds: 4
+
+  - scroll:
+      direction: down
+      pixels: 500
+
+  - screenshot:
+      output: yf_03_income_statement.png
+
+  # ── 4. Check the Options Chain ────────────────────────────────
+  - click:
+      target: "Options"
+
+  - wait:
+      seconds: 4
+
+  - scroll:
+      direction: down
+      pixels: 600
+
+  - screenshot:
+      output: yf_04_options_chain.png
+
+  # ── 5. Switch to Historical Data ──────────────────────────────
+  - click:
+      target: "Historical Data"
+
+  - wait:
+      seconds: 3
+  
+  - screenshot:
+      output: yf_05_historical.png

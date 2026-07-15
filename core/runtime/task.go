@@ -33,6 +33,9 @@ type TaskConfig struct {
 
 	// StopOnError controls whether to stop on first error (default: true).
 	StopOnError *bool `yaml:"stop_on_error,omitempty"`
+
+	// GenerateReport specifies the filename to write the markdown report to (e.g. "report.md").
+	GenerateReport string `yaml:"generate_report,omitempty"`
 }
 
 // Step represents a single step in a workflow.

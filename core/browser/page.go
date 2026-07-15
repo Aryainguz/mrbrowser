@@ -8,6 +8,7 @@ import (
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
+	"github.com/mrbrowser/mrbrowser/core/report"
 	"github.com/mrbrowser/mrbrowser/telemetry"
 )
 
@@ -21,6 +22,31 @@ type Page struct {
 	created time.Time
 	url     string
 	closed  bool
+	tracker *report.Tracker
+}
+
+// EnableNetworkTracking starts listening to network events and logs them to the tracker.
+func (p *Page) EnableNetworkTracking(tracker *report.Tracker) {
+	p.tracker = tracker
+	chromedp.ListenTarget(p.ctx, func(ev interface{}) {
+		switch ev := ev.(type) {
+		case *network.EventResponseReceived:
+			if p.tracker != nil {
+				// Record basic API details
+				req := report.APIRequest{
+					Method:     "GET", // The response event doesn't always have the method easily accessible without keeping request state, defaulting for now
+					URL:        ev.Response.URL,
+					StatusCode: int(ev.Response.Status),
+				}
+				p.tracker.RecordAPIRequest(req)
+			}
+		}
+	})
+
+	// Enable the network domain to receive these events
+	go func() {
+		_ = chromedp.Run(p.ctx, network.Enable())
+	}()
 }
 
 // Navigate navigates to the given URL and waits for the page to load.
